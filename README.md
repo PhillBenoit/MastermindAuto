@@ -1,0 +1,2 @@
+# MastermindAuto
+Mastermind auto solver
