@@ -5,20 +5,20 @@ public class AutoMaster {
 	
 	static private int turn_count;
 	
-	static private ArrayList<String> guesses;
+	static private String[] guesses;
 	
-	static private ArrayList<Integer>[] results;
+	static private int[][] results;
 	
 	static private boolean[][] possible;
 	
 	static private MastermindController controller;
 	
+	static private final int MAX_TURNS = 10;
+	
 	public static void main(String[] args) {
 		turn_count = 0;
-		guesses = new ArrayList<String>();
-		results = new ArrayList[2];
-		results[0] = new ArrayList<Integer>();
-		results[1] = new ArrayList<Integer>();
+		guesses = new String[MAX_TURNS];
+		results = new int[2][MAX_TURNS];
 		possible = new boolean[6][4];
 		for (boolean[] row : possible) Arrays.fill(row, true);
 		
@@ -43,45 +43,65 @@ public class AutoMaster {
 	}
 	
 	static private void runOpeningGambit() {
-		int rcrp, rcwp;
-		rcrp = controller.getRightColorRightPlace("RROO");
-		rcwp = controller.getRightColorWrongPlace("RROO");
-		results[0].add(rcrp);
-		results[1].add(rcwp);
-		guesses.add("RROO");
-		turn_count++;
-		if (rcrp == 0) {
+	    String gambit_mask = "0011";
+	    char[][] gambit_colors = {{'R','O'},{'Y','G'},{'B','P'}};
+	    
+		processTurn(gambit_mask.replace('0', gambit_colors[0][0]).replace('1', gambit_colors[0][1]));
+	    analizeGambit(0);
+		/*
+		if (results[0][turn_count-1] == 0) {
 			possible[0][0] = false;
 			possible[0][1] = false;
 			possible[1][2] = false;
 			possible[1][3] = false;
 		}
-		if (rcwp == 0) {
+		if (results[1][turn_count-1] == 0) {
 			possible[1][0] = false;
 			possible[1][1] = false;
 			possible[0][2] = false;
 			possible[0][3] = false;
 		}
-		System.out.format("RCRP: %d  RCWP: %d\n", rcrp,rcwp);
-
-		rcrp = controller.getRightColorRightPlace("YYGG");
-		rcwp = controller.getRightColorWrongPlace("YYGG");
-		results[0].add(rcrp);
-		results[1].add(rcwp);
-		guesses.add("YYGG");
-		turn_count++;
-		if (rcrp == 0) {
+		*/
+		
+		processTurn(gambit_mask.replace('0', gambit_colors[1][0]).replace('1', gambit_colors[1][1]));
+		analizeGambit(2);
+		/*
+		if (results[0][turn_count-1] == 0) {
 			possible[2][0] = false;
 			possible[2][1] = false;
 			possible[3][2] = false;
 			possible[3][3] = false;
 		}
-		if (rcwp == 0) {
+		if (results[1][turn_count-1] == 0) {
 			possible[3][0] = false;
 			possible[3][1] = false;
 			possible[2][2] = false;
 			possible[2][3] = false;
 		}
+		*/
+	}
+	
+	static private void analizeGambit(int starting_index) {
+	    if (results[0][turn_count-1] == 0) {
+            possible[starting_index][0] = false;
+            possible[starting_index][1] = false;
+            possible[starting_index+1][2] = false;
+            possible[starting_index+1][3] = false;
+        }
+        if (results[1][turn_count-1] == 0) {
+            possible[starting_index+1][0] = false;
+            possible[starting_index+1][1] = false;
+            possible[starting_index][2] = false;
+            possible[starting_index][3] = false;
+        }
+	}
+	
+	static private void processTurn(String guess) {
+	        results[0][turn_count] = controller.getRightColorRightPlace(guess);
+	        results[1][turn_count] = controller.getRightColorWrongPlace(guess);
+	        guesses[turn_count] = guess;
+            System.out.format("RCRP: %d  RCWP: %d\n", results[0][turn_count],results[1][turn_count]);
+	        turn_count++;
 	}
 
 }
