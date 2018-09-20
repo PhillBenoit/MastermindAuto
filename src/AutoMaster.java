@@ -1,4 +1,3 @@
-import java.util.ArrayList;
 import java.util.Arrays;
 
 public class AutoMaster {
@@ -48,37 +47,12 @@ public class AutoMaster {
 	    
 		processTurn(gambit_mask.replace('0', gambit_colors[0][0]).replace('1', gambit_colors[0][1]));
 	    analizeGambit(0);
-		/*
-		if (results[0][turn_count-1] == 0) {
-			possible[0][0] = false;
-			possible[0][1] = false;
-			possible[1][2] = false;
-			possible[1][3] = false;
-		}
-		if (results[1][turn_count-1] == 0) {
-			possible[1][0] = false;
-			possible[1][1] = false;
-			possible[0][2] = false;
-			possible[0][3] = false;
-		}
-		*/
 		
 		processTurn(gambit_mask.replace('0', gambit_colors[1][0]).replace('1', gambit_colors[1][1]));
 		analizeGambit(2);
-		/*
-		if (results[0][turn_count-1] == 0) {
-			possible[2][0] = false;
-			possible[2][1] = false;
-			possible[3][2] = false;
-			possible[3][3] = false;
-		}
-		if (results[1][turn_count-1] == 0) {
-			possible[3][0] = false;
-			possible[3][1] = false;
-			possible[2][2] = false;
-			possible[2][3] = false;
-		}
-		*/
+		
+		processTurn(gambit_mask.replace('0', gambit_colors[2][0]).replace('1', gambit_colors[2][1]));
+		analizeGambit(4);
 	}
 	
 	static private void analizeGambit(int starting_index) {
