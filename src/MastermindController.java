@@ -101,7 +101,7 @@ public class MastermindController {
      * @param color color to get the index for
      * @return index of the color
      */
-    private int getColorIndex(char color) {
+    public int getColorIndex(char color) {
         for (int step = 0; step < MastermindModel.COLOR_KEY.length; step++)
             if (color == MastermindModel.COLOR_KEY[step]) return step;
         //return an illegal index for colors not found

@@ -12,17 +12,20 @@ public class AutoMaster {
 	
 	static private MastermindController controller;
 	
+	static private boolean is_solved;
+	
 	static private final int MAX_TURNS = 10;
 	
 	public static void main(String[] args) {
+		is_solved = false;
 		turn_count = 0;
 		guesses = new String[MAX_TURNS];
 		results = new int[2][MAX_TURNS];
 		possible = new boolean[6][4];
 		for (boolean[] row : possible) Arrays.fill(row, true);
 		
-		MastermindModel answer = new MastermindModel("OROO");
-
+		MastermindModel answer = new MastermindModel();
+		
         controller = new MastermindController(answer);
         
         runOpeningGambit();
@@ -31,6 +34,7 @@ public class AutoMaster {
         
         System.out.println(controller.getAnswer());
         System.out.format("Turns: %d\n", turn_count);
+        System.out.println("Solved: " + is_solved);
 	}
 	
 	static private void printPossible() {
@@ -45,14 +49,28 @@ public class AutoMaster {
 	    String gambit_mask = "0011";
 	    char[][] gambit_colors = {{'R','O'},{'Y','G'},{'B','P'}};
 	    
-		processTurn(gambit_mask.replace('0', gambit_colors[0][0]).replace('1', gambit_colors[0][1]));
-	    analizeGambit(0);
-		
-		processTurn(gambit_mask.replace('0', gambit_colors[1][0]).replace('1', gambit_colors[1][1]));
-		analizeGambit(2);
-		
-		processTurn(gambit_mask.replace('0', gambit_colors[2][0]).replace('1', gambit_colors[2][1]));
-		analizeGambit(4);
+	    int found_counter = 0;
+	    
+	    int step_counter = 0;
+	    
+	    do {
+	    	processTurn(gambit_mask.replace('0', gambit_colors[step_counter][0])
+	    			.replace('1', gambit_colors[step_counter][1]));
+		    analizeGambit(step_counter*2);
+	    	found_counter += results[0][turn_count-1] + results[1][turn_count-1];
+		    step_counter++;
+		} while (found_counter < 4 && step_counter < 3);
+	    
+	    for (; step_counter < 3; step_counter++) {
+	    	eliminateColor(step_counter*2);
+	    	eliminateColor((step_counter*2)+1);
+	    }
+	    
+	    System.out.println("Found count: " + found_counter);
+	}
+	
+	static private void eliminateColor(int index) {
+		Arrays.fill(possible[index], false);
 	}
 	
 	static private void analizeGambit(int starting_index) {
@@ -74,6 +92,7 @@ public class AutoMaster {
 	        results[0][turn_count] = controller.getRightColorRightPlace(guess);
 	        results[1][turn_count] = controller.getRightColorWrongPlace(guess);
 	        guesses[turn_count] = guess;
+	        is_solved = results[0][turn_count] == 4;
             System.out.format("RCRP: %d  RCWP: %d\n", results[0][turn_count],results[1][turn_count]);
 	        turn_count++;
 	}
